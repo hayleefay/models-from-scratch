@@ -1,48 +1,24 @@
+import numpy as np
+
 class LinearRegression():
     def __init__(self, x, y):
-        self.x = x
         self.y = y
-        self.n = self.calculate_n(self.x)
-        self.summ_xy = self.summ_product_of_two_variables(self.x, self.y)
-        self.summ_x = self.summ_one_variable(self.x)
-        self.summ_y = self.summ_one_variable(self.y)
-        self.summ_xx = self.summ_product_of_two_variables(self.x, self.x)
 
-        self.b1 = self.calculate_b1()
-        self.b0 = self.calculate_b0()
-        self.yhats = [self.predict(obs) for obs in self.x]
+        # add intercept to x matrix
+        intercept_ones = np.ones((x.shape[0],1))
+        self.x = np.concatenate((intercept_ones, x.reshape(-1,1)), axis=1)
 
-    def summ_one_variable(self, data):
-        # summation of all values of variable
-        return sum(data)
-
-    def summ_product_of_two_variables(self, m, p):
-        product = [m*p for m,p in zip(m,p)]
-        return sum(product)
-
-    def square_values(self, data):
-        # square all of values of a variable
-        return [m*m for m in data]
-
-    def calculate_n(self, data):
-        # count number of observations in variable
-        return len(data)
-
-    def calculate_b1(self):
-        # b1 = ((n*Summ(xy)) - (Summ(x)*Summ(y))) / (n*Summ(x^2) - (Summ(x)^2))
-        b1_num = (self.n*self.summ_xy) - (self.summ_x*self.summ_y)
-        b1_den = (self.n*self.summ_xx) - (self.summ_x*self.summ_x)
-        b1 = b1_num / b1_den
-        return b1
+        self.yhat = []
     
-    def calculate_b0(self):
-        # b0 = (Summ(y) - b1*Summ(x)) / n
-        b0 = (self.summ_y - (self.b1*self.summ_x)) / self.n
-        return b0
+    def fit(self):
+        # (X'X)^(-1)X'Y to calculate OLS coefficient estimates
+        self.b = np.dot(np.linalg.inv(np.dot(self.x.T, self.x)), np.dot(self.x.T, self.y))
+        self.yhat = np.dot(self.x, self.b)
     
     def predict(self, input):
         # predict y value for given x
-        return self.b0 + self.b1*input
+        input_array = np.array([1, input])
+        return np.dot(input_array, self.b)
     
     def calc_t_stat(self):
         # calculate standard error of the slope

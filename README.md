@@ -7,6 +7,7 @@ Models implemented:
     - t stat for slope coefficient
 
 TO DO:
+- [ ] Rewrite with numpy
 - [ ] Multiple linear regression
 - [ ] Support vector machine
 - [ ] Decision tree
